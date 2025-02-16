@@ -1,0 +1,438 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import HeroText from '~/components/widgets/HeroText.astro';
+import {isValidURL, isValidHTTPMethod} from '~/utils/url';
+
+export const prerender = false;
+
+import type {Graph} from 'schema-dts';
+import BlogLatestPosts from '../components/widgets/BlogLatestPosts.astro';
+import {getPermalink} from '~/utils/permalinks';
+
+const schema: Graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'SoftwareApplication',
+      name: 'Cross-Origin Resource Sharing (CORS) Tester and Debugger',
+      description: 'A tool to test and debug Cross-Origin Resource Sharing (CORS) policies for your website or API. Check if your CORS policies are correctly configured.',
+      applicationCategory: 'DeveloperTool',
+      operatingSystem: 'All',
+      softwareVersion: '1.0.0',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '5',
+        ratingCount: '35',
+      },
+      review: [
+        {
+          '@type': 'Review',
+          author: {
+            '@type': 'Person',
+            name: 'Mary Smith',
+          },
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: '5',
+            bestRating: '5',
+          },
+          reviewBody: 'Excellent tool for testing CORS policies quickly and efficiently.',
+        },
+      ],
+      url: 'https://failwarn.com/cors-tester/',
+      screenshot: 'https://failwarn.com/images/cors_tester_screenshot.png',
+      author: {
+        '@type': 'Organization',
+        name: 'FailWarn',
+        url: 'https://failwarn.com',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'FailWarn',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://failwarn.com/images/logo_512x512.png',
+        },
+      },
+    },
+  ],
+};
+
+const metadata = {
+  title: 'Cross-Origin Resource Sharing (CORS) Tester and Debugger | FailWarn',
+  description: `A tool to test and debug Cross-Origin Resource Sharing (CORS) policies for your website or API. Check if your CORS policies are correctly configured.`,
+  openGraph: {
+    type: 'website',
+  },
+};
+
+const responseHeaders = {
+  'Access-Control-Allow-Origin': 'N/A',
+  'Access-Control-Allow-Methods': 'N/A',
+  'Access-Control-Allow-Headers': 'N/A',
+  'Access-Control-Allow-Credentials': 'N/A',
+  'Access-Control-Expose-Headers': 'N/A',
+  'Access-Control-Max-Age': 'N/A',
+  'Access-Control-Request-Method': 'N/A',
+  'Access-Control-Request-Headers': 'N/A',
+  Vary: 'N/A',
+  Origin: 'N/A',
+  'Timing-Allow-Origin': 'N/A',
+};
+const errors = {};
+let responseStatus = 'N/A';
+let origin = '';
+let target = '';
+let method = 'POST';
+let originMatch = undefined as boolean | undefined;
+let checkCredentials = false;
+let credentialsAllowed = undefined as boolean | undefined;
+
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData();
+    target = data.get('target') as string;
+    method = data.get('method') as string;
+    checkCredentials = data.get('check_credentials') === 'on';
+
+    try {
+      const originURL = new URL(data.get('origin') as string);
+      origin = originURL.origin;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_) {
+      errors['origin'] = 'Invalid URL';
+    }
+
+    if (!isValidURL(target)) {
+      errors['target'] = 'Invalid URL';
+    }
+
+    if (!isValidHTTPMethod(method)) {
+      errors['method'] = 'Invalid HTTP method';
+    }
+
+    const response = await fetch(target, {
+      method,
+      headers: {
+        Origin: origin,
+        'User-Agent': 'CORS-Testing-Tool/1.0, see: https://failwarn.com/cors-tester/',
+      },
+      signal: AbortSignal.timeout(5000),
+    });
+
+    responseHeaders['Access-Control-Allow-Origin'] = response.headers.get('Access-Control-Allow-Origin') ?? 'Missing';
+    responseHeaders['Access-Control-Allow-Methods'] = response.headers.get('Access-Control-Allow-Methods') ?? 'Missing';
+    responseHeaders['Access-Control-Allow-Headers'] = response.headers.get('Access-Control-Allow-Headers') ?? 'Missing';
+    responseHeaders['Access-Control-Allow-Credentials'] =
+      response.headers.get('Access-Control-Allow-Credentials') ?? 'Missing';
+    responseHeaders['Access-Control-Expose-Headers'] =
+      response.headers.get('Access-Control-Expose-Headers') ?? 'Missing';
+    responseHeaders['Access-Control-Max-Age'] = response.headers.get('Access-Control-Max-Age') ?? 'Missing';
+    responseHeaders['Access-Control-Request-Method'] =
+      response.headers.get('Access-Control-Request-Method') ?? 'Missing';
+    responseHeaders['Access-Control-Request-Headers'] =
+      response.headers.get('Access-Control-Request-Headers') ?? 'Missing';
+
+    responseHeaders['Vary'] = response.headers.get('Vary') ?? 'Missing';
+    responseHeaders['Origin'] = response.headers.get('Origin') ?? 'Missing';
+    responseHeaders['Timing-Allow-Origin'] = response.headers.get('Timing-Allow-Origin') ?? 'Missing';
+
+    responseStatus = String(response.status);
+
+    originMatch =
+      response.headers.get('Access-Control-Allow-Origin') === origin ||
+      response.headers.get('Access-Control-Allow-Origin') === '*';
+
+    if (checkCredentials) {
+      credentialsAllowed = response.headers.get('Access-Control-Allow-Credentials') === 'true';
+    } else {
+      credentialsAllowed = undefined;
+    }
+    
+    console.info(`Check page. Origin [${origin}], Target [${target}], Method: [${method}] check creds: [${checkCredentials}], origin match: [${originMatch}], creds allowed: [${credentialsAllowed}]`);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.info(`Check page error. Error: [${error.message}], Origin [${origin}], Target [${target}], Method: [${method}] check creds: [${checkCredentials}]`);
+      errors['general'] = 'An error occurred while fetching the target URL';
+    }
+  }
+}
+---
+
+<Layout metadata={metadata} schema={schema}>
+  <HeroText
+    tagline="Cross-Origin Resource Sharing Debugger"
+    title="CORS Tester"
+    subtitle="Check if CORS policies are correctly configured."
+  />
+  <form method="POST" class="max-w-xl mx-auto my-8 p-6 bg-white rounded shadow space-y-6">
+    <div>
+      {errors['general'] && <p class="mb-2 text-lg text-red-600">{errors['general']}</p>}
+      <label for="website-origin" class="block text-lg text-gray-700">Origin (Your Website)</label>
+      <input
+        type="url"
+        id="website-origin"
+        name="origin"
+        placeholder="https://yourwebsite.com"
+        value={origin}
+        required
+        class="mt-1 block w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-neutral-500 focus:border-neutral-500"
+      />
+      {errors['origin'] && <p class="mb-2 text-lg text-red-600">{errors['origin']}</p>}
+      <span class="text-xs text-gray-700"
+      >Note: browsers send only protocols, hostnames, and ports as the origin. Paths are not included.</span
+      >
+    </div>
+
+    <div>
+      <label for="api-target" class="block text-lg text-gray-700">Target URL</label>
+      <input
+        type="url"
+        id="api-target"
+        name="target"
+        value={target}
+        placeholder="https://api.failwarn.com/"
+        required
+        class="mt-1 block w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-neutral-500 focus:border-neutral-500"
+      />
+      {errors['target'] && <p class="mb-2 text-lg text-red-600">{errors['target']}</p>}
+    </div>
+
+    <div>
+      <label for="http-method" class="block text-lg text-gray-700">HTTP Method </label>
+      <select
+        id="http-method"
+        name="method"
+        required
+        class="mt-1 block w-full sm:w-64 px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-neutral-500 focus:border-neutral-500"
+      >
+        <option selected={method === 'GET'} value="GET">GET</option>
+        <option selected={method === 'POST'} value="POST">POST</option>
+        <option selected={method === 'PUT'} value="PUT">PUT</option>
+        <option selected={method === 'DELETE'} value="DELETE">DELETE</option>
+        <option selected={method === 'OPTIONS'} value="OPTIONS">OPTIONS</option>
+      </select>
+      {errors['method'] && <p class="mb-2 text-lg text-red-600">{errors['method']}</p>}
+      <span class="text-xs text-gray-700"
+      >Note: Browsers do preflight (OPTIONS) requests for non-simple requests (e.g., POST with custom headers).</span
+      >
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <input
+        type="checkbox"
+        id="check_credentials"
+        name="check_credentials"
+        checked={checkCredentials}
+        class="mt-1 px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-neutral-500 focus:border-neutral-500"
+      />
+      <label for="check_credentials" class="text-sm text-gray-700"
+      >Check credentials allowed (cookies, HTTP authentication)
+      </label>
+    </div>
+
+    <div>
+      <button
+        type="submit"
+        class="w-full px-4 py-2 text-xl font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-lg focus:z-10 focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
+      >
+        TEST
+      </button>
+    </div>
+    <div>
+      <div class="my-1">
+        Origin Match: {' '}{
+        originMatch === true ? (
+          <span class="text-green-700 font-semibold">✅ Yes</span>
+        ) : originMatch === false ? (
+          <span class="text-red-700 font-semibold">❌ No</span>
+        ) : (
+          <span class="text-gray-700 font-semibold">N/A</span>
+        )
+      }
+        {originMatch === false && (
+          responseHeaders['Access-Control-Allow-Origin'] === 'Missing' ? (
+            <p class="text-xs text-gray-700">
+              Missing: <code class="text-gray-900">Access-Control-Allow-Origin</code> header
+            </p>
+          ) : (
+            <p class="text-xs text-gray-700">
+              <code class="text-gray-900">{origin}</code> is not allowed by <code class="text-gray-900">Access-Control-Allow-Origin</code> header: <code class="text-gray-900">{responseHeaders['Access-Control-Allow-Origin']}</code>
+            </p>
+          )
+        )}
+      </div>
+
+      {
+        checkCredentials && (
+          <div class="my-2">
+            Credentials Allowed:{' '}
+            {credentialsAllowed === true ? (
+              <span class="text-green-700 font-semibold">✅ Yes</span>
+            ) : (
+              <span class="text-red-700 font-semibold">❌ No</span>
+              <p class="text-xs text-gray-700">
+                Missing: <code class="text-gray-900">Access-Control-Allow-Credentials</code> header
+              </p>
+            )}
+          </div>
+        )
+      }
+      <div>
+        <div class="my-2">
+          <h3 class="text-2xl font-bold text-gray-700">Response Details</h3>
+          <span class="block text-sm text-gray-700">Status Code: {responseStatus}</span>
+          <span class="block text-md font-bold text-gray-700"
+          >Access-Control-Allow-Origin: {responseHeaders['Access-Control-Allow-Origin']}</span
+          >
+          <ul class="list-disc pl-6">
+            <li class="text-xs text-gray-500">
+              Purpose: Specifies which origins are permitted to access the resource.
+            </li>
+            <li class="text-xs text-gray-500">Format: A URL or "*" as a wildcard.</li>
+            <li class="text-xs text-gray-500">Missing: Indicates that cross-origin access might be blocked.</li>
+          </ul>
+        </div>
+        <div class="my-2">
+          <span class="block text-md font-bold text-gray-700"
+          >Access-Control-Allow-Methods: {responseHeaders['Access-Control-Allow-Methods']}</span
+          >
+          <ul class="list-disc pl-6">
+            <li class="text-xs text-gray-500">Purpose: Lists the HTTP methods allowed when accessing the resource.</li>
+            <li class="text-xs text-gray-500">Format: Comma-separated values (e.g., GET, POST).</li>
+            <li class="text-xs text-gray-500">Missing: May default to a limited set of methods.</li>
+          </ul>
+        </div>
+        <div class="my-2">
+          <span class="block text-md font-bold text-gray-700"
+          >Access-Control-Allow-Headers: {responseHeaders['Access-Control-Allow-Headers']}</span
+          >
+          <ul class="list-disc pl-6">
+            <li class="text-xs text-gray-500">
+              Purpose: Specifies the HTTP headers that can be used during the actual request.
+            </li>
+            <li class="text-xs text-gray-500">Format: Comma-separated header names.</li>
+            <li class="text-xs text-gray-500">Missing: The client may not be able to send custom headers.</li>
+          </ul>
+        </div>
+        <div class="my-2">
+          <span class="block text-md font-bold text-gray-700"
+          >Access-Control-Allow-Credentials: {responseHeaders['Access-Control-Allow-Credentials']}</span
+          >
+          <ul class="list-disc pl-6">
+            <li class="text-xs text-gray-500">
+              Purpose: Indicates whether credentials such as cookies or HTTP authentication are allowed.
+            </li>
+            <li class="text-xs text-gray-500">Format: A boolean value ("true" or "false").</li>
+            <li class="text-xs text-gray-500">
+              Missing: Authentication details will not be included in cross-origin requests.
+            </li>
+          </ul>
+        </div>
+        <div class="my-2">
+          <span class="block text-md font-bold text-gray-700"
+          >Access-Control-Expose-Headers: {responseHeaders['Access-Control-Expose-Headers']}</span
+          >
+          <ul class="list-disc pl-6">
+            <li class="text-xs text-gray-500">
+              Purpose: Indicates which headers can be exposed as part of the response.
+            </li>
+            <li class="text-xs text-gray-500">Format: Comma-separated header names.</li>
+            <li class="text-xs text-gray-500">Missing: Only a few safe headers are available to the client.</li>
+          </ul>
+        </div>
+        <div class="my-2">
+          <span class="block text-md font-bold text-gray-700"
+          >Access-Control-Max-Age: {responseHeaders['Access-Control-Max-Age']}</span
+          >
+          <ul class="list-disc pl-6">
+            <li class="text-xs text-gray-500">
+              Purpose: Defines the time, in seconds, that the results of a preflight request can be cached.
+            </li>
+            <li class="text-xs text-gray-500">Format: A numeric value in seconds.</li>
+            <li class="text-xs text-gray-500">Missing: Preflight requests will occur more frequently.</li>
+          </ul>
+        </div>
+        <div class="my-2">
+          <span class="block text-md font-bold text-gray-700"
+          >Access-Control-Request-Method: {responseHeaders['Access-Control-Request-Method']}</span
+          >
+          <ul class="list-disc pl-6">
+            <li class="text-xs text-gray-500">
+              Purpose: Indicates which HTTP method will be used in the actual request.
+            </li>
+            <li class="text-xs text-gray-500">Format: A single HTTP method (e.g., GET, POST).</li>
+            <li class="text-xs text-gray-500">Missing: The preflight may not specify an intended method.</li>
+          </ul>
+        </div>
+        <div class="my-2">
+          <span class="block text-md font-bold text-gray-700"
+          >Access-Control-Request-Headers: {responseHeaders['Access-Control-Request-Headers']}</span
+          >
+          <ul class="list-disc pl-6">
+            <li class="text-xs text-gray-500">Purpose: Lists which headers will be sent with the actual request.</li>
+            <li class="text-xs text-gray-500">Format: Comma-separated header names.</li>
+            <li class="text-xs text-gray-500">
+              Missing: Specific header information might be omitted from the preflight.
+            </li>
+          </ul>
+        </div>
+        <div class="my-2">
+          <span class="block text-md font-bold text-gray-700">Vary: {responseHeaders['Vary']}</span>
+          <ul class="list-disc pl-6">
+            <li class="text-xs text-gray-500">
+              Purpose: Informs caches about which request headers were used for content negotiation.
+            </li>
+            <li class="text-xs text-gray-500">Format: A list of header names or patterns.</li>
+            <li class="text-xs text-gray-500">Missing: Caching policies may fall back to default behavior.</li>
+          </ul>
+        </div>
+        <div class="my-2">
+          <span class="block text-md font-bold text-gray-700">Origin: {responseHeaders['Origin']}</span>
+          <ul class="list-disc pl-6">
+            <li class="text-xs text-gray-500">Purpose: Reflects the origin of the request as seen by the server.</li>
+            <li class="text-xs text-gray-500">Format: A URL indicating the origin.</li>
+            <li class="text-xs text-gray-500">Missing: Could suggest an issue with how the header is processed.</li>
+          </ul>
+        </div>
+        <div class="my-2">
+          <span class="block text-md font-bold text-gray-700"
+          >Timing-Allow-Origin: {responseHeaders['Timing-Allow-Origin']}</span
+          >
+          <ul class="list-disc pl-6">
+            <li class="text-xs text-gray-500">
+              Purpose: Specifies which origins can access timing information for performance metrics.
+            </li>
+            <li class="text-xs text-gray-500">Format: A URL or "*" wildcard.</li>
+            <li class="text-xs text-gray-500">Missing: Timing details may remain restricted to the same-origin.</li>
+          </ul>
+        </div>
+
+        <div class="mt-4 mb-2">
+          <h3 class="text-lg font-bold text-gray-700">Needs more information about CORS?</h3>
+          <p class="text-sm text-gray-700">
+            Read our blog post <a
+            href={getPermalink('/blog/how-to-fix-security-error-blocked-by-cors-policy')}
+            class="text-accent">How to Fix Security Error: Blocked by CORS Policy</a
+          >.
+          </p>
+        </div>
+
+        <div class="mt-4 mb-2">
+          <h3 class="text-lg font-bold text-gray-700">Found a issue? Have a suggestion?</h3>
+          <p class="text-sm text-gray-700">
+            Please <a href={getPermalink('/contact')} class="text-accent">contact us</a> with your feedback.
+          </p>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <BlogLatestPosts id="blog" title="Our blog" information={`Guides, Product Updates, and Helpful Tips`}/>
+</Layout>

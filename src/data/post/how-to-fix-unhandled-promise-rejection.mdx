@@ -1,0 +1,73 @@
+---
+author: Damian
+publishDate: 2025-01-14T00:00:00Z
+updateDate: 2025-01-28T10:00:00Z
+title: "How to fix: Unhandled Promise Rejection"
+excerpt: Learn how to properly handle unhandled Promise rejections in JavaScript. Discover common causes, see practical examples, and implement effective solutions to prevent application failures.
+image: ~/assets/images/blog_code3.jpg
+category: How to
+tags:
+  - how-to
+  - javascript
+---
+import { getDashboardPermalink } from '~/utils/permalinks';
+export const loginPermalink = getDashboardPermalink('/login');
+
+Unhandled Promise Rejections occur when a JavaScript Promise is rejected, and there is no `.catch()` handler or equivalent error-handling mechanism to manage the error.
+It may result in application failures, frozen functionality, or other unpredictable behavior - particularly problematic in live production systems where they can negatively impact the end-user experience.
+
+### **Common Causes**
+- Missing \`.catch()\` blocks on promises.
+- Errors thrown inside asynchronous functions without proper handling.
+- Network requests failing without error handling.
+
+### **Example**
+~~~js
+async function fetchData() {
+    const response = await fetch('/api/data');
+    const data = await response.json();
+    return data;
+}
+fetchData().then(data => {
+    console.log(data);
+});
+// No catch block to handle potential errors
+~~~
+
+### **How to Fix**
+**Always Handle Rejections:**
+  
+~~~js
+fetchData()
+    .then(data => {
+        console.log(data);
+    })
+    .catch(error => {
+        console.error('Error fetching data:', error);
+        // Implement fallback logic or user notifications
+    });
+~~~
+  
+**Use \`try...catch\` in Async Functions:**
+  
+~~~js
+async function fetchData() {
+    try {
+        const response = await fetch('/api/data');
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        // Implement fallback logic or user notifications
+    }
+}
+~~~
+
+### **Summary**
+
+By understanding and implementing proper error handling through `.catch()` blocks and `try...catch` statements, you can effectively manage unhandled promise rejections and create more robust applications.
+
+Remember to always handle potential errors in asynchronous operations to prevent application crashes and provide better user experiences.

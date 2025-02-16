@@ -1,0 +1,30 @@
+---
+import Layout from '~/layouts/Layout.astro';
+import Header from '~/components/widgets/Header.astro';
+import Footer from '~/components/widgets/Footer.astro';
+
+import type { Graph } from 'schema-dts';
+
+import { headerData, footerData } from '~/navigation';
+
+import type { MetaData } from '~/types';
+
+export interface Props {
+  metadata?: MetaData;
+  schema?: Graph;
+}
+
+const { metadata, schema } = Astro.props;
+---
+
+<Layout metadata={metadata} schema={schema}>
+  <slot name="header">
+    <Header {...headerData} isSticky />
+  </slot>
+  <main>
+    <slot />
+  </main>
+  <slot name="footer">
+    <Footer {...footerData} />
+  </slot>
+</Layout>

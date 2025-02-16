@@ -1,0 +1,299 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import type { Graph, WebApplication, Organization } from 'schema-dts';
+
+import Hero2 from '~/components/widgets/Hero2.astro';
+import Features from '~/components/widgets/Features.astro';
+import Content from '~/components/widgets/Content.astro';
+import Brands from '~/components/widgets/Brands.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+
+import BlogLatestPosts from '~/components/widgets/BlogLatestPosts.astro';
+import { getDashboardPermalink } from '~/utils/permalinks';
+import Testimonials from '~/components/widgets/Testimonials.astro';
+
+const heroImg = '~/assets/images/hero1.png';
+const zapierImg = '~/assets/images/zapier.svg';
+const makeImg = '~/assets/images/make.svg';
+const n8nImg = '~/assets/images/n8n.svg';
+
+const schema: Graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebApplication',
+      name: 'FailWarn',
+      description:
+        'Monitor JavaScript errors in your front-end web applications. Get all the details needed to resolve bugs quickly.',
+      operatingSystem: 'Web',
+      applicationCategory: 'Monitoring',
+      url: 'https://failwarn.com',
+      image: 'https://failwarn.com/images/logo_1200x628.png',
+      offers: [
+        {
+          '@type': 'Offer',
+          price: '15',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+        },
+        {
+          '@type': 'Offer',
+          price: '49',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+        },
+        {
+          '@type': 'Offer',
+          price: '159',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+        }
+      ],
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.94',
+        ratingCount: '16',
+      },
+      review: [
+        {
+          '@type': 'Review',
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: '5',
+          },
+          author: {
+            '@type': 'Person',
+            name: 'Anna Smith',
+          },
+        },
+        {
+          '@type': 'Review',
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: '5',
+          },
+          author: {
+            '@type': 'Person',
+            name: 'Tom W. Johnson',
+          },
+        },
+        {
+          '@type': 'Review',
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: '4',
+          },
+          author: {
+            '@type': 'Person',
+            name: 'David Brown',
+          },
+        },
+        {
+          '@type': 'Review',
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: '5',
+          },
+          author: {
+            '@type': 'Person',
+            name: 'John Lee',
+          },
+        },
+      ],
+    } as WebApplication,
+    {
+      '@type': 'Organization',
+      name: 'FailWarn',
+      url: 'https://failwarn.com/',
+      logo: 'https://failwarn.com/images/logo_1200x628.png',
+      keywords: 'JavaScript, Error Monitoring, Bug Tracking',
+      email: 'contact@failwarn.com',
+      areaServed: 'Worldwide',
+      description:
+        'Monitor JavaScript errors in your front-end web applications. Get all the details needed to resolve bugs quickly.',
+      founder: {
+        '@type': 'Person',
+        name: 'Damian Masior',
+        email: 'damian@dmasior.com',
+      },
+      contactPoint: {
+        '@type': 'ContactPoint',
+        contactType: 'Customer support',
+        email: 'contact@failwarn.com',
+        availableLanguage: ['English'],
+      },
+      sameAs: ['https://x.com/failwarnhq', 'https://www.linkedin.com/company/failwarn', 'https://githun.com/failwarn'],
+    } as Organization,
+  ],
+};
+
+const metadata = {
+  title: `JavaScript Error Tracking | FailWarn`,
+  description: `Monitor JavaScript errors in your front-end web applications. Get all the details needed to resolve bugs quickly.`,
+  openGraph: {
+    type: 'website',
+  },
+};
+---
+
+<Layout metadata={metadata} schema={schema}>
+  <!-- Hero2 Widget ******************* -->
+
+  <Hero2
+    tagline="Simple and privacy friendly"
+    actions={[
+      {
+        variant: 'primary',
+        target: '_blank',
+        text: 'Try for free',
+        subText: 'No credit card required',
+        href: getDashboardPermalink('/signup'),
+      },
+      { text: 'Learn more', href: '#about' },
+    ]}
+    image={{ src: heroImg, alt: 'Console Error Logo', height: 500 }}
+  >
+    <Fragment slot="title">
+      Track <span class="text-accent">JavaScript</span> Errors
+    </Fragment>
+
+    <Fragment slot="subtitle">
+      Monitor JavaScript errors in your web applications. Get details needed to fix bugs quickly.
+    </Fragment>
+  </Hero2>
+
+  <!-- Content Widget **************** -->
+
+  <Content
+    id="about"
+    title="Fix bugs faster"
+    subtitle="Easy to use error tracking for your web applications"
+    isReversed
+    items={[
+      {
+        title: 'Graphs',
+        description:
+          'Visualize events happening in your web application. See how many errors you have, how often they occur, and how they affect your users.',
+      },
+      {
+        title: 'Detailed Reports',
+        description: `Get detailed information about each error, including stack traces, affected users, and more. Dive deep into the data to understand the root cause of the problem.`,
+      },
+    ]}
+    image={{
+      src: '~/assets/images/dash1.png',
+      alt: 'Dashboard',
+    }}
+  >
+    <Fragment slot="content">
+      <h3 class="text-2xl font-bold tracking-tight dark:text-white sm:text-3xl mb-2">
+        Discover issues<br /><span class="text-2xl">happening to your customers</span>
+      </h3>
+    </Fragment>
+
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-blue-50 dark:bg-transparent"></div>
+    </Fragment>
+  </Content>
+
+  <!-- Features Widget *************** -->
+
+  <Features
+    id="features"
+    title="Why choose FailWarn?"
+    subtitle=""
+    columns={2}
+    items={[
+      {
+        title: 'Open Source',
+        description:
+          'We are fully open source, and you can check our code on GitHub. We funded by our subscribers.',
+        icon: 'tabler:user-heart',
+      },
+      {
+        title: 'Privacy friendly',
+        description:
+          'We don’t track users, and we don’t collect personal data.',
+        icon: 'tabler:shield-lock',
+      },
+      {
+        title: 'Lightweight script',
+        description:
+          'Our frontend bundle is lightweight and won’t slow down your app.',
+        icon: 'tabler:file-type-js',
+      },
+      {
+        title: 'No tricks, no hidden fees',
+        description:
+          'Just choose a plan that suits your needs, and you are ready to go.',
+        icon: 'tabler:credit-card',
+      },
+    ]}
+  />
+
+  <!-- Testimonials Widget ************* -->
+
+  <Testimonials
+    title="A Brand You Can Trust"
+    testimonials={[
+      {
+        testimonial: `First-class customer support. We are very happy with the service.`,
+        name: 'Tom',
+        job: 'Developer',
+      },
+      {
+        testimonial: `Helped us to identify and fix bugs. Now, it is an essential part of our process.`,
+        name: 'Anna',
+        job: 'CTO, ObsLabs',
+      },
+      {
+        testimonial: `Monitor exceptions, improve our observability.`,
+        name: 'David',
+        job: 'Software Engineer',
+      },
+    ]}
+  />
+
+  <!-- Brands Widget ****************** -->
+
+  <Brands
+    title="No-code integrations"
+    subtitle="We support the most popular platforms and tools. Connect FailWarn with your favorite apps."
+    icons={[]}
+    images={[
+      {
+        src: zapierImg,
+        alt: 'Zapier.com',
+      },
+      {
+        src: makeImg,
+        alt: 'Make.com',
+      },
+      {
+        src: n8nImg,
+        alt: 'N8n.io',
+      },
+    ]}
+  />
+
+  <!-- CallToAction Widget *********** -->
+
+  <CallToAction
+    title="Start monitoring your JavaScript errors today"
+    subtitle="Get started in minutes. No credit card required."
+    actions={[
+      {
+        variant: 'primary',
+        text: 'Try for free',
+        href: getDashboardPermalink('/signup'),
+      },
+    ]}
+  />
+
+  <!-- BlogLatestPost Widget **************** -->
+
+  <BlogLatestPosts id="blog" title="Our blog" information={`Guides, Product Updates, and Helpful Tips`} />
+  <Fragment slot="bg">
+    <div class="absolute inset-0 bg-blue-50 dark:bg-transparent"></div>
+  </Fragment>
+</Layout>

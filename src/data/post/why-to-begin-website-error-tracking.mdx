@@ -1,0 +1,47 @@
+---
+author: Damian
+publishDate: 2025-01-13T00:00:00Z
+updateDate: 2025-01-20T00:00:00Z
+title: Why to begin Website Error Tracking
+excerpt: JavaScript errors can happen unexpectedly from many sources, like code bugs, third-party scripts, or network errors. Tracking these issues is crucial, as errors hurt user experience and extended downtime can cost you customers and revenue.
+image: ~/assets/images/blog_gen1.jpg
+category: Product Update
+tags:
+  - product-update
+metadata:
+  canonical: https://failwarn.com/blog/why-to-begin-website-error-tracking/
+---
+import { getDashboardPermalink } from '~/utils/permalinks';
+export const loginPermalink = getDashboardPermalink('/login');
+
+## Script errors
+Usually caused by a bug in your code or a third-party script.
+Every production deployment may introduce new script errors that you didn't catch in development.
+FailWarn monitors your website and alerts you when they occur.
+
+## Network errors
+Network errors are usually caused by server issues or client-side network problems.
+You may have an API that your website depends on, and when it goes down, your website will start throwing errors.
+
+**In most cases your backend teams will be alerted, but your application may also use third-party APIs that you don't control.** 
+
+Because FailWarn monitors your website from the client side, we can alert you when any of these errors occur.
+
+## Track errors with 1 simple script
+There are many tools available to monitor website errors, but none of them are as simple as FailWarn.
+
+**Just copy and paste the script tag to your website and you're done.**
+
+FailWarn will start monitoring your website for script and HTTP errors immediately.
+1. <a href={loginPermalink}>Login</a> to your account and get the script tag from the dashboard.
+2. Paste the script tag in your website **head** section.
+
+![failwarn script in page html head](~/assets/images/script.svg)
+
+That's it! FailWarn will start monitoring your website for errors.
+
+## Set up alerts
+We send an email when any new issue occurs on your website. You can setup additional email addresses to receive alerts.
+
+Visit the dashboard and edit the project to set up alert thresholds.
+You will receive an email alert when the error rate exceeds the alert threshold.

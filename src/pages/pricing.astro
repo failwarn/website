@@ -1,0 +1,183 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import Prices from '~/components/widgets/Pricing.astro';
+import HeroText from '~/components/widgets/HeroText.astro';
+
+import { getDashboardPermalink } from '~/utils/permalinks';
+
+import type { Graph, Product } from 'schema-dts';
+
+const schema: Graph = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Product',
+      name: 'FailWarn',
+      description: 'JavaScript Error Tracking',
+      image: 'https://failwarn.com/images/logo_512x512.png',
+      url: 'https://failwarn.com/pricing/',
+      offers: [
+        {
+          '@type': 'Offer',
+          name: 'Starter Plan',
+          description: 'Solo or small teams',
+          price: '9',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+          priceValidUntil: '2026-01-01',
+        },
+        {
+          '@type': 'Offer',
+          name: 'Standard Plan',
+          description: 'Small to medium teams',
+          price: '39',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+          priceValidUntil: '2026-01-01',
+        },
+        {
+          '@type': 'Offer',
+          name: 'Advanced Plan',
+          description: 'Medium to large teams',
+          price: '149',
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+          priceValidUntil: '2026-01-01',
+        },
+      ],
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.96',
+        reviewCount: '16',
+      },
+      review: [
+        {
+          '@type': 'Review',
+          author: {
+            '@type': 'Person',
+            name: 'Jane Williams',
+          },
+          datePublished: '2025-01-25 11:04:50',
+          reviewBody: 'FailWarn is a great tool for monitoring JavaScript errors.',
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: '5',
+          },
+        },
+        {
+          '@type': 'Review',
+          author: {
+            '@type': 'Person',
+            name: 'David Johnson',
+          },
+          datePublished: '2025-01-10 09:38:05',
+          reviewBody: 'I love FailWarn. It helps me to track errors in my applications.',
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: '5',
+          },
+        },
+        {
+          '@type': 'Review',
+          author: {
+            '@type': 'Person',
+            name: 'Tom W. Quill',
+          },
+          datePublished: '2025-01-14 08:42:03',
+          reviewBody: 'Saved me a lot of time. It helped me to find and fix bugs in my code.',
+          reviewRating: {
+            '@type': 'Rating',
+            ratingValue: '5',
+          },
+        },
+      ],
+    } as Product,
+  ],
+};
+
+const metadata = {
+  title: `Pricing | FailWarn`,
+  description: `The FailWarn Pricing Plans`,
+  openGraph: {
+    type: 'website',
+  },
+};
+---
+
+<Layout metadata={metadata} schema={schema}>
+  <HeroText tagline="Pricing" title="Get started for free" subtitle="Choose the plan that works best for you." />
+  <Prices
+    title="Plans"
+    subtitle="Sign up for 14-day free trial. No credit card required."
+    prices={[
+      {
+        title: 'starter',
+        subtitle: 'Solo or small teams',
+        price: 9,
+        period: 'per month',
+        items: [
+          {
+            description: '100k events per month',
+          },
+          {
+            description: 'Integrations',
+          },
+          {
+            description: 'Email notifications',
+          },
+        ],
+        callToAction: {
+          target: '_blank',
+          text: 'Start free trial',
+          href: getDashboardPermalink('/signup')+ '?plan=starter',
+        },
+      },
+      {
+        title: 'standard',
+        subtitle: 'Small to medium teams',
+        price: 39,
+        period: 'Per Month',
+        items: [
+          {
+            description: 'Million events per month',
+          },
+          {
+            description: 'Integrations',
+          },
+          {
+            description: 'Email notifications',
+          },
+        ],
+        callToAction: {
+          target: '_blank',
+          text: 'Start free trial',
+          href: getDashboardPermalink('/signup')+ '?plan=standard',
+        },
+        hasRibbon: true,
+        ribbonTitle: 'popular',
+      },
+      {
+        title: 'advanced',
+        subtitle: 'Medium to large teams',
+        price: 149,
+        period: 'Per Month',
+        items: [
+          {
+            description: '5 Million events per month',
+          },
+          {
+            description: 'Integrations',
+          },
+          {
+            description: 'Email notifications',
+          },
+        ],
+        callToAction: {
+          target: '_blank',
+          text: 'Start free trial',
+          href: getDashboardPermalink('/signup')+ '?plan=advanced',
+        },
+      },
+    ]}
+  />
+</Layout>

@@ -1,0 +1,174 @@
+---
+author: Damian
+publishDate: 2025-01-16T00:00:00Z
+updateDate: 2025-02-03T11:00:00Z
+title: "How to fix: SecurityError: Blocked by CORS Policy"
+excerpt: "Cross Origin Resource Sharing error typically arises when a web application attempts to make a request to a different domain than the one that served the web page, violating the browser's Same-Origin Policy."
+image: ~/assets/images/blog_code2.jpg
+category: How to
+tags:
+  - how-to
+  - javascript
+  - cors
+---
+import { getDashboardPermalink } from '~/utils/permalinks';
+export const loginPermalink = getDashboardPermalink('/login');
+
+In this comprehensive guide, we'll delve into what CORS is, why this error occurs, and provide actionable solutions to help you resolve it effectively.
+
+#### Interested in CORS Testing?
+
+See our [CORS Tester & Debugger](/cors-tester/) tool to identify and fix CORS issues quickly.
+
+## What is CORS?
+
+**CORS**, or **Cross-Origin Resource Sharing**, is a security feature implemented by browsers to restrict web pages from making requests to a different domain than the one that served the web page. This policy helps prevent malicious activities, such as cross-site request forgery (CSRF). However, legitimate scenarios often require cross-origin requests, and CORS provides a way to enable such interactions safely.
+
+### Understanding Same-Origin Policy
+
+The **Same-Origin Policy** is a critical security concept that ensures that a web page can only interact with resources from the same origin.
+
+An **origin** is defined by the combination of the protocol (e.g., HTTP, HTTPS), domain, and port number. For example, a page served from `https://example.com` cannot access resources from `https://anotherdomain.com` without proper authorization.
+
+## Common Causes of CORS Errors
+
+### 1. Missing CORS Headers on the Server
+
+One of the most common reasons for CORS errors is the absence of the necessary CORS headers in the server's response. Browsers rely on these headers to determine whether to allow the cross-origin request.
+
+You can check if a server has CORS headers configured correctly using curl:
+
+~~~bash
+# Check preflight CORS configuration
+curl -X OPTIONS -H "Origin: https://yourdomain.com" \
+  -H "Access-Control-Request-Method: POST" \
+  -H "Access-Control-Request-Headers: Content-Type" \
+  -I https://api.yourdomain.com/endpoint
+~~~
+
+The server should respond with headers like:
+
+~~~http
+Access-Control-Allow-Origin: https://yourdomain.com
+Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+Access-Control-Allow-Headers: Content-Type, Authorization
+~~~
+
+**If these headers are missing or incorrectly configured, the browser will block the request.**
+
+### 2. Incorrect CORS Configuration
+
+Misconfiguring CORS settings can lead to security vulnerabilities or unexpected behavior. For instance, allowing all origins (`*`) in production can pose significant security risks.
+
+### 3. Preflight Request Failures
+
+For certain types of requests, browsers send a **preflight** request using the OPTIONS method to check if the actual request is safe to send. If the preflight request fails, the actual request is blocked.
+
+### 4. Credentialed Requests Without Proper Headers
+
+When making requests that include credentials (e.g., cookies, HTTP authentication), specific CORS headers must be set correctly to allow such requests.
+
+## How to Fix CORS Errors
+
+### 1. Configure CORS on the Server
+
+The most effective way to resolve CORS issues is to properly configure your server to include the appropriate CORS headers.
+
+#### Example: Express.js
+
+If you're using Express.js, you can use the **cors** middleware to enable CORS.
+
+~~~javascript
+const express = require('express');
+const cors = require('cors');
+const app = express();
+
+const corsOptions = {
+    origin: 'https://yourdomain.com',
+    methods: ['GET', POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true // Enable if using cookies or HTTP authentication
+};
+
+app.use(cors(corsOptions));
+
+app.get('/api/data', (req, res) => {
+    res.json({ message: 'CORS is configured correctly!' });
+});
+
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
+});
+~~~
+
+#### Example: Django
+
+In Django, you can use the **django-cors-headers** package to manage CORS.
+
+1. Install the package:
+
+~~~bash
+pip install django-cors-headers
+~~~
+
+2. Add it to your `INSTALLED_APPS` and `MIDDLEWARE` in `settings.py`:
+
+~~~python
+INSTALLED_APPS = [
+    ...
+    'corsheaders',
+    ...
+]
+
+MIDDLEWARE = [
+    ...
+    'corsheaders.middleware.CorsMiddleware',
+    ...
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "https://yourdomain.com",
+]
+~~~
+
+### 2. Adjust Client-Side Requests
+
+Ensure that your client-side requests are correctly configured, especially when dealing with credentials.
+
+~~~javascript
+fetch('https://api.yourdomain.com/data', {
+    method: 'GET',
+    credentials: 'include', // Include cookies in the request
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error('Error:', error));
+~~~
+
+### 3. Use a Proxy
+
+As a temporary workaround, you can use a proxy server to make the request on behalf of your client application. This method is not recommended for production due to potential security risks.
+
+~~~javascript
+// Example using a proxy in create-react-app
+fetch('/proxy/api/data')
+    .then(response => response.json())
+    .then(data => console.log(data));
+~~~
+
+### 4. Enable CORS in Development
+
+During development, you might encounter CORS issues when working with different local servers. Use development tools or browser extensions to bypass CORS restrictions temporarily. However, always ensure proper CORS configuration in production.
+
+## Best Practices to Prevent CORS Errors
+
+- **Specify Allowed Origins:** Avoid using wildcard (`*`) for `Access-Control-Allow-Origin`. Instead, specify the exact domains that are permitted to access your resources.
+- **Limit Allowed Methods and Headers:** Only allow the necessary HTTP methods and headers required by your application.
+- **Handle Preflight Requests Properly:** Ensure that your server can correctly handle OPTIONS requests and respond with the appropriate CORS headers.
+- **Use HTTPS:** Always serve your applications over HTTPS to ensure secure communication, which is also a requirement for certain CORS configurations.
+- **Test CORS Configurations:** Regularly test your CORS settings to ensure they work as expected across different environments and scenarios.
+
+## Conclusion
+
+CORS errors can be a stumbling block in web development, but understanding the underlying principles and proper configuration can help you resolve these issues effectively.
+By implementing the solutions and best practices outlined in this guide, you can ensure smooth and secure cross-origin interactions in your web applications.

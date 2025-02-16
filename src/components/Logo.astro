@@ -1,0 +1,17 @@
+---
+import { SITE } from 'astrowind:config';
+import Image from './common/Image.astro';
+
+const logo = '~/assets/images/logo.svg';
+---
+
+<div>
+  <Image class="inline-block !w-8 !h-8 rtl:mr-2" src={logo} alt="Logo" />
+</div>
+<div>
+  <span
+    class="self-center tracking-wider ml-2 rtl:ml-0 rtl:mr-2 text-2xl md:text-xl font-bold text-gray-900 whitespace-nowrap dark:text-white"
+  >
+    {SITE?.name}
+  </span>
+</div>

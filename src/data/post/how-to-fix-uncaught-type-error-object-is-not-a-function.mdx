@@ -1,0 +1,208 @@
+---
+author: Damian
+publishDate: 2025-01-18T00:00:00Z
+updateDate: 2025-01-28T10:00:00Z
+title: "How to fix: Uncaught TypeError: object is not a function"
+excerpt: "Troubleshoot and resolve JavaScript's 'Uncaught TypeError: object is not a function' error. Discover why it occurs, identify common pitfalls, and implement proven solutions for proper function handling."
+image: ~/assets/images/blog_code3.jpg
+category: How to
+tags:
+  - how-to
+  - javascript
+---
+import { getDashboardPermalink } from '~/utils/permalinks';
+export const loginPermalink = getDashboardPermalink('/login');
+
+## Understanding the Error
+
+The error message `Uncaught TypeError: object is not a function` indicates that the code is trying to call a method or property as a function, but the value being referenced isn't a function. This can happen in several scenarios:
+
+- **Incorrect Function Invocation:** Attempting to call an object property that isn't a function.
+- **Misconfigured Imports:** Importing a module incorrectly, causing the expected function to be undefined or an object.
+- **Syntax Errors:** Mistyping function names or improper use of parentheses.
+- **Context Issues:** Losing the correct context (the value of `this`) when invoking object methods.
+
+## Common Causes of Uncaught TypeError
+
+### 1. **Incorrect Function Invocation**
+
+Attempting to call a property as a function when it's not defined as one will trigger this error.
+
+```javascript
+const user = {
+    name: 'Alice',
+    age: 30
+};
+
+user(); // Uncaught TypeError: user is not a function
+```
+
+In the example above, `user` is an object, not a function. Trying to invoke it as if it were a function leads to the error.
+
+### 2. **Misconfigured Imports**
+
+Importing modules incorrectly, especially when dealing with default and named exports, can result in importing an object instead of the expected function.
+
+```javascript
+// math.js
+export function add(a, b) {
+    return a + b;
+}
+
+// main.js
+import add from './math';
+
+add(2, 3); // Uncaught TypeError: add is not a function
+```
+
+If `math.js` exports `add` as a named export, importing it as a default export will cause `add` to be `undefined` or an object, leading to the error when invoked.
+
+### 3. **Syntax Errors**
+
+Simple typos or incorrect usage of parentheses can mistakenly turn properties into function calls.
+
+```javascript
+const config = {
+    url: 'https://api.example.com',
+    timeout: 5000
+};
+
+console.log(config.url()); // Uncaught TypeError: config.url is not a function
+```
+
+Here, `config.url` is a string, not a function. Adding `()` mistakenly attempts to invoke it as a function.
+
+### 4. **Context Issues**
+
+Losing the correct context when invoking object methods can lead to properties being `undefined`, resulting in the error.
+
+```javascript
+const user = {
+    name: 'Bob',
+    getName: function() {
+        return this.name;
+    }
+};
+
+const getName = user.getName;
+console.log(getName()); // Uncaught TypeError: Cannot read property 'name' of undefined
+```
+
+While this specific example might throw a different error, similar context issues can lead to `object is not a function` errors.
+
+## How to Fix the Error
+
+### 1. **Verify Function Calls**
+
+Ensure that the entity you're trying to invoke is indeed a function.
+
+```javascript
+const user = {
+    name: 'Alice',
+    greet: function() {
+        return `Hello, \${this.name}!`;
+    }
+};
+
+user.greet(); // Hello, Alice!
+
+user(); // Uncaught TypeError: user is not a function
+```
+
+In this corrected example, only `user.greet()` is a valid function call.
+
+### 2. **Check Module Imports**
+
+Ensure that you're importing modules correctly, matching their export types.
+
+```javascript
+// math.js
+export function add(a, b) {
+    return a + b;
+}
+
+// main.js (Correct Import)
+import { add } from './math';
+
+add(2, 3); // 5
+```
+
+If the module uses default exports, adjust the import accordingly.
+
+```javascript
+// math.js
+export default function add(a, b) {
+    return a + b;
+}
+
+// main.js (Default Import)
+import add from './math';
+
+add(2, 3); // 5
+```
+
+### 3. **Avoid Syntax Errors**
+
+Double-check your code for typos and ensure that you're not mistakenly invoking non-function properties.
+
+```javascript
+const config = {
+    url: 'https://api.example.com',
+    timeout: 5000
+};
+
+console.log(config.url); // https://api.example.com (Do not add parentheses)
+```
+
+### 4. **Maintain Proper Context**
+
+When extracting methods from objects, bind the correct context to prevent `this` from being `undefined`.
+
+```javascript
+const user = {
+    name: 'Bob',
+    getName: function() {
+        return this.name;
+    }
+};
+
+const getName = user.getName.bind(user);
+console.log(getName()); // Bob
+```
+
+Alternatively, use arrow functions which do not have their own `this` binding.
+
+```javascript
+const user = {
+    name: 'Bob',
+    getName: () => this.name
+};
+
+console.log(user.getName()); // undefined or error, due to incorrect `this` binding
+```
+
+**Note:** Arrow functions can sometimes complicate `this` binding, so use them judiciously.
+
+## Best Practices to Prevent Uncaught TypeError
+
+- **Use Strict Mode:** Enabling strict mode can help catch errors early.
+    
+```javascript
+'use strict';
+
+function example() {
+    // Your code here
+}
+```
+
+- **Type Checking:** Utilize TypeScript or JSDoc to enforce type safety in your codebase.
+
+- **Code Reviews:** Regular code reviews can help identify potential issues before they become problematic.
+
+- **Automated Testing:** Implement unit tests to ensure that functions behave as expected.
+
+- **Linting Tools:** Tools like ESLint can catch syntax errors and enforce coding standards.
+
+## Conclusion
+
+The `Uncaught TypeError: object is not a function` is a common JavaScript error that can disrupt your application's functionality. By understanding the common causes and implementing the strategies outlined above, you can effectively diagnose and resolve this error. Adhering to best practices such as proper module imports, maintaining correct context, and thorough testing will help prevent such issues, leading to more stable and maintainable codebases.

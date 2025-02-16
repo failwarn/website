@@ -1,0 +1,14 @@
+---
+import { ANALYTICS } from 'astrowind:config';
+---
+
+{
+  ANALYTICS?.vendors?.plausible?.enabled ? (
+    <script
+      defer
+      data-domain="failwarn.com"
+      data-api="https://psb.solver89.workers.dev/psb/e"
+      src="https://psb.solver89.workers.dev/psb.js"
+    />
+  ) : null
+}
