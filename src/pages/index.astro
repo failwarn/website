@@ -5,7 +5,6 @@ import type { Graph, WebApplication, Organization } from 'schema-dts';
 import Hero2 from '~/components/widgets/Hero2.astro';
 import Features from '~/components/widgets/Features.astro';
 import Content from '~/components/widgets/Content.astro';
-import Brands from '~/components/widgets/Brands.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
 
 import BlogLatestPosts from '~/components/widgets/BlogLatestPosts.astro';
@@ -13,9 +12,6 @@ import { getDashboardPermalink } from '~/utils/permalinks';
 import Testimonials from '~/components/widgets/Testimonials.astro';
 
 const heroImg = '~/assets/images/hero1.png';
-const zapierImg = '~/assets/images/zapier.svg';
-const makeImg = '~/assets/images/make.svg';
-const n8nImg = '~/assets/images/n8n.svg';
 
 const schema: Graph = {
   '@context': 'https://schema.org',
@@ -205,9 +201,9 @@ const metadata = {
     columns={2}
     items={[
       {
-        title: 'Open Source',
+        title: 'Open source',
         description:
-          'We are fully open source, and you can check our code on GitHub. We funded by our subscribers.',
+          'We are fully open-source, and funded by our subscribers. You can check our code on GitHub.',
         icon: 'tabler:user-heart',
       },
       {
@@ -254,32 +250,10 @@ const metadata = {
     ]}
   />
 
-  <!-- Brands Widget ****************** -->
-
-  <Brands
-    title="No-code integrations"
-    subtitle="We support the most popular platforms and tools. Connect FailWarn with your favorite apps."
-    icons={[]}
-    images={[
-      {
-        src: zapierImg,
-        alt: 'Zapier.com',
-      },
-      {
-        src: makeImg,
-        alt: 'Make.com',
-      },
-      {
-        src: n8nImg,
-        alt: 'N8n.io',
-      },
-    ]}
-  />
-
   <!-- CallToAction Widget *********** -->
 
   <CallToAction
-    title="Start monitoring your JavaScript errors today"
+    title="Start monitoring JavaScript errors"
     subtitle="Get started in minutes. No credit card required."
     actions={[
       {
