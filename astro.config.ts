@@ -11,11 +11,11 @@ import icon from 'astro-icon';
 import compress from 'astro-compress';
 import type { AstroIntegration } from 'astro';
 
+import cloudflare from '@astrojs/cloudflare';
+
 import astrowind from './vendor/integration';
 
 import { readingTimeRemarkPlugin, responsiveTablesRehypePlugin, lazyImagesRehypePlugin } from './src/utils/frontmatter';
-
-import node from '@astrojs/node';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -28,6 +28,7 @@ const configFile = isProduction ? './src/config.yaml' : './src/config.dev.yaml';
 
 export default defineConfig({
   output: 'static',
+  adapter: cloudflare(),
 
   integrations: [
     tailwind({
@@ -79,7 +80,11 @@ export default defineConfig({
   ],
 
   image: {
-    domains: [],
+    endpoint: {
+      // Production env requires trailing slash
+      route: `/_image${isProduction ? '/' : ''}`,
+      entrypoint: undefined,
+    }
   },
 
   markdown: {
@@ -97,10 +102,6 @@ export default defineConfig({
       noExternal: ['astro-seo-schema'],
     },
   },
-
-  adapter: node({
-    mode: 'standalone',
-  }),
   build: {
     assets: '_assets',
   }

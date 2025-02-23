@@ -1,5 +1,5 @@
 {
-  "name": "failwarn/website",
+  "name": "website",
   "version": "1.0.0",
   "description": "FailWarn Website",
   "engines": {
@@ -8,21 +8,22 @@
   "author": "FailWarn",
   "license": "MIT",
   "scripts": {
-    "dev": "astro dev --host",
-    "start": "astro dev --host",
-    "build": "astro build",
-    "preview": "astro preview",
     "astro": "astro",
+    "build": "astro build",
     "check": "npm run check:astro && npm run check:eslint && npm run check:prettier",
     "check:astro": "astro check",
     "check:eslint": "eslint .",
     "check:prettier": "prettier --check .",
+    "deploy": "npm run build && wrangler pages deploy",
+    "dev": "astro dev --host",
     "fix": "npm run fix:eslint && npm run fix:prettier",
     "fix:eslint": "eslint --fix .",
-    "fix:prettier": "prettier -w ."
+    "fix:prettier": "prettier -w .",
+    "preview": "astro preview",
+    "start": "astro dev --host"
   },
   "dependencies": {
-    "@astrojs/node": "^9.0.2",
+    "@astrojs/cloudflare": "^12.2.1",
     "@astrojs/rss": "^4.0.11",
     "@astrojs/sitemap": "^3.2.1",
     "@astrolib/analytics": "^0.6.1",
