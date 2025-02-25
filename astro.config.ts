@@ -36,6 +36,7 @@ export default defineConfig({
     }),
     sitemap({
       changefreq: 'weekly',
+      customPages: ["https://failwarn.com/images/favicon.ico"],
     }),
     mdx(),
     icon({
